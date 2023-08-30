@@ -7,7 +7,7 @@ int MOTOR_A_DER = 9; // IN2
 int MOTOR_B_DER = 5; // IN3
 int MOTOR_B_IZQ = 4; // IN4
 
-int speedInitial = 120;
+int speedInitial = 140;
 int SPEED_MAX = 255;
 
 
@@ -27,10 +27,8 @@ void loop() {
 
   analogWrite(MOTOR_A, speedInitial);
   analogWrite(MOTOR_B, speedInitial);
-  digitalWrite(MOTOR_A_DER, LOW);
-  digitalWrite(MOTOR_A_IZQ, HIGH);
-  digitalWrite(MOTOR_B_DER, LOW);
-  digitalWrite(MOTOR_B_IZQ, HIGH);
+
+  backTo();
 
   delay(2000);
   
@@ -38,38 +36,97 @@ void loop() {
   digitalWrite(MOTOR_A_IZQ, LOW);
   digitalWrite(MOTOR_B_DER, HIGH);
   digitalWrite(MOTOR_B_IZQ, LOW);
+  
+  delay(500);
 
-  accelerator();
+  accelerator(1000);
 
   delay(2000);
 
-  speedInitial = 0;
-  analogWrite(MOTOR_A, speedInitial);
-  analogWrite(MOTOR_B, speedInitial);
-  digitalWrite(MOTOR_A_DER, LOW);
-  digitalWrite(MOTOR_A_IZQ, LOW);
-  digitalWrite(MOTOR_B_DER, LOW);
-  digitalWrite(MOTOR_B_IZQ, LOW);
+  stopMotors();
 
-  delay(1000);
+  delay(500);
 
-  speedInitial = 120;
+  travelAsSen(6);
+
+  delay(500);
+
+  speedInitial = 150;
+  delay(200);
 
 
 }
 
-void accelerator() {
-  for (int i = speedInitial; i <= SPEED_MAX; i++) {
+/**
+ * Aumenta gradualmente la velocidad inicial de los motores.
+ * 
+ * Esta función se encarga de incrementar la velocidad inicial de los motores de manera gradual
+ * durante un intervalo de tiempo especificado.
+ * 
+ * @param int timeAccelerator - El tiempo en milisegundos entre cada incremento de velocidad.
+ * 
+ * La función utiliza la velocidad inicial actual y la aumenta en incrementos de 20 hasta
+ * alcanzar la velocidad máxima permitida. La velocidad se ajusta tanto en el motor A como
+ * en el motor B.
+ *
+ */
+void accelerator(int timeAccelerator) {
+  for (int i = speedInitial; i <= SPEED_MAX; i += 20) {
     if (speedInitial + 20 > SPEED_MAX) {
       break;
     }
     speedInitial += 20;
     analogWrite(MOTOR_A, speedInitial);
     analogWrite(MOTOR_B, speedInitial);
-    delay(3000);
+    delay(timeAccelerator);
   }
 }
 
-  void travelAsSen(){
-    // Se crea el ciclo para simular el recorrido en seno.
+void stopMotors() {
+  digitalWrite(MOTOR_A_DER, LOW);
+  digitalWrite(MOTOR_A_IZQ, LOW);
+  digitalWrite(MOTOR_B_DER, LOW);
+  digitalWrite(MOTOR_B_IZQ, LOW);
+}
+
+/**
+ * Simula el movimiento de los motores en un patrón similar a un seno.
+ * 
+ * @param int numberSection - Cantidad de repeticiones de giros del motor.
+ */
+void travelAsSen(int numberSection) {
+    int zigzagDuration = 1400;
+    // Realizamos varios tramos del zig zag
+    for (int i = 0; i < numberSection; i++) { 
+
+      // Giro a la derecha
+      digitalWrite(MOTOR_A_DER, HIGH);
+      digitalWrite(MOTOR_A_IZQ, LOW);
+      digitalWrite(MOTOR_B_DER, LOW);
+      digitalWrite(MOTOR_B_IZQ, LOW);
+      delay(zigzagDuration);
+
+      stopMotors();
+      delay(200);
+
+      // Giro a la izquierda
+      digitalWrite(MOTOR_A_DER, LOW);
+      digitalWrite(MOTOR_A_IZQ, LOW);
+      digitalWrite(MOTOR_B_DER, HIGH);
+      digitalWrite(MOTOR_B_IZQ, LOW);
+      delay(zigzagDuration);
+
+      stopMotors();
+      delay(200);
+    }
+  }
+
+ /**
+  * Función de retroceso.
+  */
+  void backTo(){
+    digitalWrite(MOTOR_A_DER, LOW);
+    digitalWrite(MOTOR_A_IZQ, HIGH);
+    digitalWrite(MOTOR_B_DER, LOW);
+    digitalWrite(MOTOR_B_IZQ, HIGH);
   }
