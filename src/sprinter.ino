@@ -8,6 +8,7 @@ int MOTOR_B_DER = 5; // IN3
 int MOTOR_B_IZQ = 4; // IN4
 
 int speedInitial = 140;
+int speedInitialB =  150;
 int SPEED_MAX = 255;
 
 
@@ -26,18 +27,18 @@ void setup() {
 void loop() {
 
   analogWrite(MOTOR_A, speedInitial);
-  analogWrite(MOTOR_B, speedInitial);
+  analogWrite(MOTOR_B, speedInitialB);
 
-  backTo();
+  /*backTo();
 
-  delay(2000);
+  delay(2000);*/
   
   digitalWrite(MOTOR_A_DER, HIGH);
   digitalWrite(MOTOR_A_IZQ, LOW);
   digitalWrite(MOTOR_B_DER, HIGH);
   digitalWrite(MOTOR_B_IZQ, LOW);
   
-  delay(500);
+  delay(2000);
 
   accelerator(1000);
 
@@ -51,8 +52,9 @@ void loop() {
 
   delay(500);
 
-  speedInitial = 150;
-  delay(200);
+  speedInitial = 140;
+  speedInitialB = 180;
+  //delay(200);
 
 
 }
@@ -74,10 +76,17 @@ void accelerator(int timeAccelerator) {
   for (int i = speedInitial; i <= SPEED_MAX; i += 20) {
     if (speedInitial + 20 > SPEED_MAX) {
       break;
+    } 
+    if (speedInitialB + 20 > SPEED_MAX) {
+      break;
     }
     speedInitial += 20;
+    speedInitialB += 20;
+    /*if (speedInitial <= 235) {
+      analogWrite(MOTOR_A, speedInitial);
+    }*/
     analogWrite(MOTOR_A, speedInitial);
-    analogWrite(MOTOR_B, speedInitial);
+    analogWrite(MOTOR_B, speedInitialB);
     delay(timeAccelerator);
   }
 }
@@ -95,29 +104,43 @@ void stopMotors() {
  * @param int numberSection - Cantidad de repeticiones de giros del motor.
  */
 void travelAsSen(int numberSection) {
-    int zigzagDuration = 1400;
+    int zigzagDuration = 1000;
     // Realizamos varios tramos del zig zag
     for (int i = 0; i < numberSection; i++) { 
 
       // Giro a la derecha
+      analogWrite(MOTOR_A, 255);
+      analogWrite(MOTOR_B, 80);
       digitalWrite(MOTOR_A_DER, HIGH);
-      digitalWrite(MOTOR_A_IZQ, LOW);
-      digitalWrite(MOTOR_B_DER, LOW);
-      digitalWrite(MOTOR_B_IZQ, LOW);
-      delay(zigzagDuration);
-
-      stopMotors();
-      delay(200);
-
-      // Giro a la izquierda
-      digitalWrite(MOTOR_A_DER, LOW);
       digitalWrite(MOTOR_A_IZQ, LOW);
       digitalWrite(MOTOR_B_DER, HIGH);
       digitalWrite(MOTOR_B_IZQ, LOW);
+      /*digitalWrite(MOTOR_A_DER, HIGH);
+      digitalWrite(MOTOR_A_IZQ, LOW);
+      digitalWrite(MOTOR_B_DER, LOW);
+      digitalWrite(MOTOR_B_IZQ, LOW);*/
       delay(zigzagDuration);
 
       stopMotors();
-      delay(200);
+      delay(100);
+
+      // Giro a la izquierda
+      analogWrite(MOTOR_A, 80);
+      analogWrite(MOTOR_B, 255);
+
+      digitalWrite(MOTOR_A_DER, HIGH);
+      digitalWrite(MOTOR_A_IZQ, LOW);
+      digitalWrite(MOTOR_B_DER, HIGH);
+      digitalWrite(MOTOR_B_IZQ, LOW);
+      /*
+      digitalWrite(MOTOR_A_DER, LOW);
+      digitalWrite(MOTOR_A_IZQ, LOW);
+      digitalWrite(MOTOR_B_DER, HIGH);
+      digitalWrite(MOTOR_B_IZQ, LOW);*/
+      delay(zigzagDuration);
+
+      stopMotors();
+      delay(100);
     }
   }
 
